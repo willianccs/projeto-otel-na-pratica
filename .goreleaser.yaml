@@ -35,9 +35,9 @@ archives:
 dockers:
   - id: users
     image_templates:
-      - "ghcr.io/dosedetelemetria/projeto-otel-na-pratica:latest"
-      - "ghcr.io/dosedetelemetria/projeto-otel-na-pratica:{{ .Tag }}"
-      - "ghcr.io/dosedetelemetria/projeto-otel-na-pratica:v{{ .Major }}"
+      - "ghcr.io/dosedetelemetria/projeto-otel-na-pratica/users:latest"
+      - "ghcr.io/dosedetelemetria/projeto-otel-na-pratica/users:{{ .Tag }}"
+      - "ghcr.io/dosedetelemetria/projeto-otel-na-pratica/users:v{{ .Major }}"
     ids:
       - users
     dockerfile: "./cmd/users/Dockerfile"
