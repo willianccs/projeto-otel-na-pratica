@@ -1,10 +1,13 @@
 package main
 
 import (
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/app/subscriptions"
+	"net/http"
+
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/app"
 )
 
 func main() {
-	app := subscriptions.NewApp()
-	app.Start()
+	a := app.NewSubscription()
+	a.RegisterRoutes(http.DefaultServeMux)
+	http.ListenAndServe(":8083", http.DefaultServeMux)
 }
