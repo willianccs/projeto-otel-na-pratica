@@ -24,21 +24,21 @@ func NewPlanHandler(store store.Plan) *PlanHandler {
 func (h *PlanHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		users, err := h.store.List(r.Context())
+		plans, err := h.store.List(r.Context())
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		json.NewEncoder(w).Encode(users)
+		json.NewEncoder(w).Encode(plans)
 	case http.MethodPost:
-		var user model.Plan
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		var plan model.Plan
+		if err := json.NewDecoder(r.Body).Decode(&plan); err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
 
-		createdPlan, err := h.store.Create(r.Context(), user)
+		createdPlan, err := h.store.Create(r.Context(), &plan)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
