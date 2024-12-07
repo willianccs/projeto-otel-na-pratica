@@ -20,7 +20,10 @@ func main() {
 	}
 
 	{
-		a := app.NewPayment()
+		a, err := app.NewPayment()
+		if err != nil {
+			panic(err)
+		}
 		a.RegisterRoutes(mux)
 	}
 

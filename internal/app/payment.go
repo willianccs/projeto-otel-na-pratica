@@ -4,8 +4,11 @@ import (
 	"net/http"
 
 	planhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/model"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store/memory"
+	storegorm "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store/gorm"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type Payment struct {
@@ -13,12 +16,18 @@ type Payment struct {
 	Store   store.Payment
 }
 
-func NewPayment() *Payment {
-	store := memory.NewPaymentStore()
+func NewPayment() (*Payment, error) {
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"))
+	if err != nil {
+		return nil, err
+	}
+	db.AutoMigrate(&model.Payment{})
+
+	store := storegorm.NewPaymentStore(db)
 	return &Payment{
 		Handler: planhttp.NewPaymentHandler(store),
 		Store:   store,
-	}
+	}, nil
 }
 
 func (a *Payment) RegisterRoutes(mux *http.ServeMux) {

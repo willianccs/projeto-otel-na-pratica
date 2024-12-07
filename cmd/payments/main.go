@@ -7,7 +7,10 @@ import (
 )
 
 func main() {
-	a := app.NewPayment()
+	a, err := app.NewPayment()
+	if err != nil {
+		panic(err)
+	}
 	a.RegisterRoutes(http.DefaultServeMux)
 	http.ListenAndServe(":8084", http.DefaultServeMux)
 }
