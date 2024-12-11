@@ -31,6 +31,14 @@ type Endpoint struct {
 type Payments struct {
 	SubscriptionsEndpoint string  `yaml:"subscriptions_endpoint"`
 	SQLLite               SQLLite `yaml:"sqlite"`
+	NATS                  NATS    `yaml:"nats"`
+}
+
+type NATS struct {
+	Endpoint     string `yaml:"endpoint"`
+	Subject      string `yaml:"subject"`
+	Stream       string `yaml:"stream"`
+	ConsumerName string `yaml:"consumer_name"`
 }
 
 type SQLLite struct {
@@ -77,6 +85,12 @@ func getDefaultConfig() *Config {
 			SubscriptionsEndpoint: "http://localhost:8080/subscriptions",
 			SQLLite: SQLLite{
 				DSN: "file::memory:?cache=shared",
+			},
+			NATS: NATS{
+				Endpoint:     "nats://localhost:4222",
+				Subject:      "payment.process",
+				Stream:       "payments",
+				ConsumerName: "payments",
 			},
 		},
 		Subscriptions: Subscriptions{

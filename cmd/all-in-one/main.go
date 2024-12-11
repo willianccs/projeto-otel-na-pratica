@@ -49,6 +49,7 @@ func main() {
 			panic(err)
 		}
 		a.RegisterRoutes(mux)
+		defer a.Shutdown()
 	}
 
 	{
