@@ -1,8 +1,12 @@
+// Copyright Dose de Telemetria GmbH
+// SPDX-License-Identifier: Apache-2.0
+
 package app
 
 import (
 	"net/http"
 
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
 	planhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/model"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
@@ -16,8 +20,8 @@ type Payment struct {
 	Store   store.Payment
 }
 
-func NewPayment() (*Payment, error) {
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"))
+func NewPayment(cfg *cfg.Payments) (*Payment, error) {
+	db, err := gorm.Open(sqlite.Open(cfg.SQLLite.DSN))
 	if err != nil {
 		return nil, err
 	}

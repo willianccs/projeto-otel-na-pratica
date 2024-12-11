@@ -1,3 +1,6 @@
+// Copyright Dose de Telemetria GmbH
+// SPDX-License-Identifier: Apache-2.0
+
 package grpc
 
 import (

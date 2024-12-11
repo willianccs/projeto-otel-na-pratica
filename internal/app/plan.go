@@ -1,9 +1,13 @@
+// Copyright Dose de Telemetria GmbH
+// SPDX-License-Identifier: Apache-2.0
+
 package app
 
 import (
 	"net/http"
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/api"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
 	grpchandler "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/grpc"
 	planhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
@@ -17,7 +21,7 @@ type Plan struct {
 	Store       store.Plan
 }
 
-func NewPlan() *Plan {
+func NewPlan(*cfg.Plans) *Plan {
 	store := memory.NewPlanStore()
 	return &Plan{
 		Handler:     planhttp.NewPlanHandler(store),
