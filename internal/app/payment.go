@@ -61,7 +61,7 @@ func NewPayment(cfg *config.Payments) (*Payment, error) {
 
 	store := storegorm.NewPaymentStore(db)
 	pmt := &Payment{
-		Handler:  planhttp.NewPaymentHandler(store, js, cfg.NATS.Subject),
+		Handler:  planhttp.NewPaymentHandler(store, js, cfg.NATS.Subject, cfg.SubscriptionsEndpoint),
 		Store:    store,
 		natsConn: nc,
 	}

@@ -16,17 +16,19 @@ import (
 
 // PaymentHandler is an HTTP handler that performs CRUD operations for model.Payment using a store.Payment
 type PaymentHandler struct {
-	store     store.Payment
-	js        jetstream.JetStream
-	jsSubject string
+	store                 store.Payment
+	js                    jetstream.JetStream
+	jsSubject             string
+	subscriptionsEndpoint string
 }
 
 // NewPaymentHandler returns a new PaymentHandler
-func NewPaymentHandler(store store.Payment, js jetstream.JetStream, jsSubject string) *PaymentHandler {
+func NewPaymentHandler(store store.Payment, js jetstream.JetStream, jsSubject string, subscriptionsEndpoint string) *PaymentHandler {
 	return &PaymentHandler{
-		store:     store,
-		js:        js,
-		jsSubject: jsSubject,
+		store:                 store,
+		js:                    js,
+		jsSubject:             jsSubject,
+		subscriptionsEndpoint: subscriptionsEndpoint,
 	}
 }
 
@@ -34,13 +36,13 @@ func NewPaymentHandler(store store.Payment, js jetstream.JetStream, jsSubject st
 func (h *PaymentHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		users, err := h.store.List(r.Context())
+		payments, err := h.store.List(r.Context())
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(users)
+		err = json.NewEncoder(w).Encode(payments)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -51,6 +53,14 @@ func (h *PaymentHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
+
+		// Check if subscription exists
+		sub, _ := http.Get(h.subscriptionsEndpoint + "/" + payment.SubscriptionID)
+		if sub.StatusCode != http.StatusOK {
+			http.Error(w, "Subscription not found", http.StatusBadRequest)
+			return
+		}
+		defer sub.Body.Close()
 
 		payload, err := json.Marshal(payment)
 		if err != nil {

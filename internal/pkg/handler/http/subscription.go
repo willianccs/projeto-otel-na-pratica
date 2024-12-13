@@ -23,41 +23,69 @@ func NewSubscriptionHandler(store store.Subscription) *SubscriptionHandler {
 	}
 }
 
-// Handle handles the HTTP request
-func (h *SubscriptionHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		subscriptions, err := h.store.List(r.Context())
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = json.NewEncoder(w).Encode(subscriptions)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	case http.MethodPost:
-		var subscription model.Subscription
-		if err := json.NewDecoder(r.Body).Decode(&subscription); err != nil {
-			http.Error(w, "Invalid request payload", http.StatusBadRequest)
-			return
-		}
-
-		createdSubscription, err := h.store.Create(r.Context(), subscription)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = json.NewEncoder(w).Encode(createdSubscription)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusCreated)
-	default:
+func (h *SubscriptionHandler) ListSubscriptions(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
+
+	subscriptions, err := h.store.List(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(subscriptions)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, r *http.Request) {
+	subscription := &model.Subscription{}
+	if err := json.NewDecoder(r.Body).Decode(subscription); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	createdSubscription, err := h.store.Create(r.Context(), subscription)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(createdSubscription)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	return
+}
+
+func (h *SubscriptionHandler) GetSubscription(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	subscription, err := h.store.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if subscription == nil {
+		http.Error(w, "Subscription not found", http.StatusNotFound)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(subscription)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *SubscriptionHandler) UpdateSubscription(w http.ResponseWriter, r *http.Request) {
+}
+
+func (h *SubscriptionHandler) DeleteSubscription(w http.ResponseWriter, r *http.Request) {
 }
