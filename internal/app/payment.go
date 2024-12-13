@@ -75,7 +75,11 @@ func NewPayment(cfg *config.Payments) (*Payment, error) {
 }
 
 func (a *Payment) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/payments", a.Handler.Handle)
+	mux.HandleFunc("GET /payments", a.Handler.List)
+	mux.HandleFunc("POST /payments", a.Handler.Create)
+	mux.HandleFunc("GET /payments/{id}", a.Handler.Get)
+	mux.HandleFunc("PUT /payments/{id}", a.Handler.Update)
+	mux.HandleFunc("DELETE /payments/{id}", a.Handler.Delete)
 }
 
 func (a *Payment) Shutdown() error {

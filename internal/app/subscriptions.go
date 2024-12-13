@@ -26,9 +26,9 @@ func NewSubscription(*config.Subscriptions) *Subscription {
 }
 
 func (a *Subscription) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /subscriptions", a.Handler.ListSubscriptions)
-	mux.HandleFunc("POST /subscriptions", a.Handler.CreateSubscription)
-	mux.HandleFunc("GET /subscriptions/{id}", a.Handler.GetSubscription)
-	mux.HandleFunc("PUT /subscriptions/{id}", a.Handler.UpdateSubscription)
-	mux.HandleFunc("DELETE /subscriptions/{id}", a.Handler.DeleteSubscription)
+	mux.HandleFunc("GET /subscriptions", a.Handler.List)
+	mux.HandleFunc("POST /subscriptions", a.Handler.Create)
+	mux.HandleFunc("GET /subscriptions/{id}", a.Handler.Get)
+	mux.HandleFunc("PUT /subscriptions/{id}", a.Handler.Update)
+	mux.HandleFunc("DELETE /subscriptions/{id}", a.Handler.Delete)
 }
