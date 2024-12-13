@@ -40,7 +40,11 @@ func (h *PaymentHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(users)
+		err = json.NewEncoder(w).Encode(users)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	case http.MethodPost:
 		var payment model.Payment
 		if err := json.NewDecoder(r.Body).Decode(&payment); err != nil {
@@ -64,7 +68,11 @@ func (h *PaymentHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(payment)
+		err = json.NewEncoder(w).Encode(payment)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}

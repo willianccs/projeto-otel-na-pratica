@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestPlan_RegisterRoutes(t *testing.T) {
@@ -30,7 +31,10 @@ func TestPlan_RegisterRoutes(t *testing.T) {
 		require.NoError(t, err)
 	}
 	grpcServer := grpc.NewServer()
-	go grpcServer.Serve(lis)
+	go func() {
+		err = grpcServer.Serve(lis)
+		require.NoError(t, err)
+	}()
 	defer grpcServer.Stop()
 
 	mux := http.NewServeMux()
@@ -41,7 +45,7 @@ func TestPlan_RegisterRoutes(t *testing.T) {
 		Description: "This is a test plan",
 		Price:       10,
 	}
-	plan.Store.Create(context.Background(), expected)
+	_, _ = plan.Store.Create(context.Background(), expected)
 
 	// test
 	plan.RegisterRoutes(mux, grpcServer)
@@ -59,8 +63,10 @@ func TestPlan_RegisterRoutes(t *testing.T) {
 	}
 
 	{ // grpc
-		conn, err := grpc.NewClient("localhost:8081", grpc.WithInsecure())
-		defer conn.Close()
+		conn, err := grpc.NewClient("localhost:8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
+		defer func() {
+			_ = conn.Close()
+		}()
 
 		require.NoError(t, err)
 		cl := api.NewPlanServiceClient(conn)

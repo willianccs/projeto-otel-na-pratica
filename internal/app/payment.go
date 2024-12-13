@@ -31,7 +31,7 @@ func NewPayment(cfg *config.Payments) (*Payment, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&model.Payment{})
+	_ = db.AutoMigrate(&model.Payment{})
 
 	nc, err := nats.Connect(cfg.NATS.Endpoint)
 	if err != nil {
@@ -78,9 +78,9 @@ func (a *Payment) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/payments", a.Handler.Handle)
 }
 
-func (a *Payment) Shutdown() {
+func (a *Payment) Shutdown() error {
 	if a.cctx != nil {
 		a.cctx.Drain()
 	}
-	a.natsConn.Drain()
+	return a.natsConn.Drain()
 }

@@ -5,7 +5,6 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/app"
@@ -16,12 +15,8 @@ func main() {
 	configFlag := flag.String("config", "", "path to the config file")
 	flag.Parse()
 
-	c, err := config.LoadConfig(*configFlag)
-	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
-	}
-
+	c, _ := config.LoadConfig(*configFlag)
 	a := app.NewSubscription(&c.Subscriptions)
 	a.RegisterRoutes(http.DefaultServeMux)
-	http.ListenAndServe(":8083", http.DefaultServeMux)
+	_ = http.ListenAndServe(c.Server.Endpoint.HTTP, http.DefaultServeMux)
 }

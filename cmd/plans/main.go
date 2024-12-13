@@ -5,8 +5,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"net"
 	"net/http"
 
@@ -19,16 +17,10 @@ func main() {
 	configFlag := flag.String("config", "", "path to the config file")
 	flag.Parse()
 
-	c, err := config.LoadConfig(*configFlag)
-	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
-	}
+	c, _ := config.LoadConfig(*configFlag)
 
 	// starts the gRPC server
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 8081))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+	lis, _ := net.Listen("tcp", c.Server.Endpoint.GRPC)
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 
@@ -36,10 +28,8 @@ func main() {
 	a.RegisterRoutes(http.DefaultServeMux, grpcServer)
 
 	go func() {
-		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("failed to serve: %v", err)
-		}
+		_ = grpcServer.Serve(lis)
 	}()
 
-	http.ListenAndServe(":8082", http.DefaultServeMux)
+	_ = http.ListenAndServe(c.Server.Endpoint.HTTP, http.DefaultServeMux)
 }

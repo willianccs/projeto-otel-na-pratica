@@ -27,28 +27,36 @@ func NewSubscriptionHandler(store store.Subscription) *SubscriptionHandler {
 func (h *SubscriptionHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		users, err := h.store.List(r.Context())
+		subscriptions, err := h.store.List(r.Context())
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		json.NewEncoder(w).Encode(users)
+		err = json.NewEncoder(w).Encode(subscriptions)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	case http.MethodPost:
-		var user model.Subscription
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		var subscription model.Subscription
+		if err := json.NewDecoder(r.Body).Decode(&subscription); err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
 
-		createdSubscription, err := h.store.Create(r.Context(), user)
+		createdSubscription, err := h.store.Create(r.Context(), subscription)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		err = json.NewEncoder(w).Encode(createdSubscription)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(createdSubscription)
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}

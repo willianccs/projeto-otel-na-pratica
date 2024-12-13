@@ -33,7 +33,7 @@ func (h *UserHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(users)
+		_ = json.NewEncoder(w).Encode(users)
 	case http.MethodPost:
 		var user model.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -48,7 +48,7 @@ func (h *UserHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(createdUser)
+		_ = json.NewEncoder(w).Encode(createdUser)
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}

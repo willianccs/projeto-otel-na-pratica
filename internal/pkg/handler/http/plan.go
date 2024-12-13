@@ -33,7 +33,11 @@ func (h *PlanHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(plans)
+		err = json.NewEncoder(w).Encode(plans)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	case http.MethodPost:
 		var plan model.Plan
 		if err := json.NewDecoder(r.Body).Decode(&plan); err != nil {
@@ -47,8 +51,12 @@ func (h *PlanHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		err = json.NewEncoder(w).Encode(createdPlan)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(createdPlan)
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
