@@ -1,7 +1,8 @@
-Users
-===
+# Pacote `cmd/users`
 
-Examples: 
+A ser documentado.
+
+Mas por enquanto, aqui vão alguns exemplos: 
 
 ```terminal
 $ curl -X POST localhost:8081/users

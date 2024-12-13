@@ -1,7 +1,8 @@
-Plans
-===
+# Pacote `cmd/plans`
 
-Examples: 
+A ser documentado.
+
+Mas por enquanto, aqui vão alguns exemplos: 
 
 ```terminal
 $ curl curl localhost:8082/plans

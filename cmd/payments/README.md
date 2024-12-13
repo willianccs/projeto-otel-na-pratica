@@ -1,7 +1,8 @@
-Payments
-===
+# Pacote `cmd/payments`
 
-Examples: 
+A ser documentado.
+
+Mas por enquanto, aqui vão alguns exemplos: 
 
 ```terminal
 $ curl localhost:8084/payments

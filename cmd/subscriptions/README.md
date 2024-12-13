@@ -1,7 +1,8 @@
-Subscriptions
-===
+# Pacote `cmd/subscriptions`
 
-Examples: 
+A ser documentado.
+
+Mas por enquanto, aqui vão alguns exemplos: 
 
 ```terminal
 $ curl localhost:8083/subscriptions
