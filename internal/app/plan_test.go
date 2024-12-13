@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/api"
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
 	grpchandler "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/grpc"
 	planhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/model"
@@ -34,7 +34,7 @@ func TestPlan_RegisterRoutes(t *testing.T) {
 	defer grpcServer.Stop()
 
 	mux := http.NewServeMux()
-	plan := NewPlan(&cfg.Plans{})
+	plan := NewPlan(&config.Plans{})
 	expected := &model.Plan{
 		ID:          "123",
 		Name:        "Test Plan",
@@ -72,7 +72,7 @@ func TestPlan_RegisterRoutes(t *testing.T) {
 }
 
 func TestNewPlan(t *testing.T) {
-	plan := NewPlan(&cfg.Plans{})
+	plan := NewPlan(&config.Plans{})
 	assert.NotNil(t, plan.Handler)
 	assert.NotNil(t, plan.GRPCHandler)
 	assert.NotNil(t, plan.Store)
@@ -80,7 +80,7 @@ func TestNewPlan(t *testing.T) {
 
 func TestPlanHandler_Handle(t *testing.T) {
 	store := memory.NewPlanStore()
-	plan := NewPlan(&cfg.Plans{})
+	plan := NewPlan(&config.Plans{})
 	plan.Handler = planhttp.NewPlanHandler(store)
 
 	req, err := http.NewRequest("GET", "/plans", nil)
@@ -94,7 +94,7 @@ func TestPlanHandler_Handle(t *testing.T) {
 
 func TestGRPCHandler(t *testing.T) {
 	store := memory.NewPlanStore()
-	plan := NewPlan(&cfg.Plans{})
+	plan := NewPlan(&config.Plans{})
 	plan.GRPCHandler = grpchandler.NewPlanServer(store)
 
 	req := &api.ListRequest{}

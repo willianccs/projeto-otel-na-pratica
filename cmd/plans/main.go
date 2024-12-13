@@ -11,7 +11,7 @@ import (
 	"net/http"
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/app"
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
 	"google.golang.org/grpc"
 )
 
@@ -19,7 +19,7 @@ func main() {
 	configFlag := flag.String("config", "", "path to the config file")
 	flag.Parse()
 
-	c, err := cfg.LoadConfig(*configFlag)
+	c, err := config.LoadConfig(*configFlag)
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}

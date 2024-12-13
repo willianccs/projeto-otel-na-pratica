@@ -6,7 +6,7 @@ package app
 import (
 	"net/http"
 
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
 	userhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store/memory"
@@ -17,7 +17,7 @@ type User struct {
 	Store   store.User
 }
 
-func NewUser(*cfg.Users) *User {
+func NewUser(*config.Users) *User {
 	store := memory.NewUserStore()
 	return &User{
 		Handler: userhttp.NewUserHandler(store),

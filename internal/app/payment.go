@@ -7,7 +7,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
 	planhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/model"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
@@ -25,7 +25,7 @@ type Payment struct {
 	cctx     jetstream.ConsumeContext
 }
 
-func NewPayment(cfg *cfg.Payments) (*Payment, error) {
+func NewPayment(cfg *config.Payments) (*Payment, error) {
 	ctx := context.Background()
 	db, err := gorm.Open(sqlite.Open(cfg.SQLLite.DSN))
 	if err != nil {

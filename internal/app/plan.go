@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/api"
-	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/cfg"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
 	grpchandler "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/grpc"
 	planhttp "github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/handler/http"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
@@ -21,7 +21,7 @@ type Plan struct {
 	Store       store.Plan
 }
 
-func NewPlan(*cfg.Plans) *Plan {
+func NewPlan(*config.Plans) *Plan {
 	store := memory.NewPlanStore()
 	return &Plan{
 		Handler:     planhttp.NewPlanHandler(store),
