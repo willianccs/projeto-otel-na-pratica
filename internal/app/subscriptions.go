@@ -17,10 +17,10 @@ type Subscription struct {
 	Store   store.Subscription
 }
 
-func NewSubscription(*config.Subscriptions) *Subscription {
+func NewSubscription(cfg *config.Subscriptions) *Subscription {
 	store := memory.NewSubscriptionStore()
 	return &Subscription{
-		Handler: subscriptionhttp.NewSubscriptionHandler(store),
+		Handler: subscriptionhttp.NewSubscriptionHandler(store, cfg.UsersEndpoint, cfg.PlansEndpoint),
 		Store:   store,
 	}
 }

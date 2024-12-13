@@ -13,13 +13,17 @@ import (
 
 // SubscriptionHandler is an HTTP handler that performs CRUD operations for model.Subscription using a store.Subscription
 type SubscriptionHandler struct {
-	store store.Subscription
+	store         store.Subscription
+	usersEndpoint string
+	plansEndpoint string
 }
 
 // NewSubscriptionHandler returns a new SubscriptionHandler
-func NewSubscriptionHandler(store store.Subscription) *SubscriptionHandler {
+func NewSubscriptionHandler(store store.Subscription, usersEndpoint string, plansEndpoint string) *SubscriptionHandler {
 	return &SubscriptionHandler{
-		store: store,
+		store:         store,
+		usersEndpoint: usersEndpoint,
+		plansEndpoint: plansEndpoint,
 	}
 }
 
@@ -49,13 +53,33 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdSubscription, err := h.store.Create(r.Context(), subscription)
+	// verify the user exists
+	{
+		user, _ := http.Get(h.usersEndpoint + "/" + subscription.UserID)
+		if user.StatusCode != http.StatusOK {
+			http.Error(w, "User not found", http.StatusBadRequest)
+			return
+		}
+		defer user.Body.Close()
+	}
+
+	// verify the plan exists
+	{
+		plan, _ := http.Get(h.plansEndpoint + "/" + subscription.PlanID)
+		if plan.StatusCode != http.StatusOK {
+			http.Error(w, "Plan not found", http.StatusBadRequest)
+			return
+		}
+		defer plan.Body.Close()
+	}
+
+	created, err := h.store.Create(r.Context(), subscription)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(createdSubscription)
+	err = json.NewEncoder(w).Encode(created)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

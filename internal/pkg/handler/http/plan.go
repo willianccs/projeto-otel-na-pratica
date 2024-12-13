@@ -23,41 +23,80 @@ func NewPlanHandler(store store.Plan) *PlanHandler {
 	}
 }
 
-// Handle handles the HTTP request
-func (h *PlanHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		plans, err := h.store.List(r.Context())
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+func (h *PlanHandler) List(w http.ResponseWriter, r *http.Request) {
+	plans, err := h.store.List(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-		err = json.NewEncoder(w).Encode(plans)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	case http.MethodPost:
-		var plan model.Plan
-		if err := json.NewDecoder(r.Body).Decode(&plan); err != nil {
-			http.Error(w, "Invalid request payload", http.StatusBadRequest)
-			return
-		}
+	err = json.NewEncoder(w).Encode(plans)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
 
-		createdPlan, err := h.store.Create(r.Context(), &plan)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+func (h *PlanHandler) Create(w http.ResponseWriter, r *http.Request) {
+	plan := &model.Plan{}
+	if err := json.NewDecoder(r.Body).Decode(plan); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
 
-		err = json.NewEncoder(w).Encode(createdPlan)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusCreated)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	created, err := h.store.Create(r.Context(), plan)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(created)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *PlanHandler) Get(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	plan, err := h.store.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(plan)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *PlanHandler) Update(w http.ResponseWriter, r *http.Request) {
+	plan := &model.Plan{}
+	if err := json.NewDecoder(r.Body).Decode(plan); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	updated, err := h.store.Update(r.Context(), plan)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(updated)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *PlanHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	err := h.store.Delete(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }

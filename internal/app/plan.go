@@ -31,6 +31,11 @@ func NewPlan(*config.Plans) *Plan {
 }
 
 func (a *Plan) RegisterRoutes(mux *http.ServeMux, grpcSrv *grpc.Server) {
-	mux.HandleFunc("/plans", a.Handler.Handle)
+	mux.HandleFunc("GET /plans", a.Handler.List)
+	mux.HandleFunc("POST /plans", a.Handler.Create)
+	mux.HandleFunc("GET /plans/{id}", a.Handler.Get)
+	mux.HandleFunc("PUT /plans/{id}", a.Handler.Update)
+	mux.HandleFunc("DELETE /plans/{id}", a.Handler.Delete)
+
 	api.RegisterPlanServiceServer(grpcSrv, a.GRPCHandler)
 }

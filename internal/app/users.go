@@ -26,5 +26,9 @@ func NewUser(*config.Users) *User {
 }
 
 func (a *User) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/users", a.Handler.Handle)
+	mux.HandleFunc("GET /users", a.Handler.List)
+	mux.HandleFunc("POST /users", a.Handler.Create)
+	mux.HandleFunc("GET /users/{id}", a.Handler.Get)
+	mux.HandleFunc("PUT /users/{id}", a.Handler.Update)
+	mux.HandleFunc("DELETE /users/{id}", a.Handler.Delete)
 }

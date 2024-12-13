@@ -93,7 +93,7 @@ func TestPlanHandler_Handle(t *testing.T) {
 	assert.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	plan.Handler.Handle(w, req)
+	plan.Handler.List(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }

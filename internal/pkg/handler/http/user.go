@@ -23,33 +23,87 @@ func NewUserHandler(store store.User) *UserHandler {
 	}
 }
 
-// Handle handles the HTTP request
-func (h *UserHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		users, err := h.store.List(r.Context())
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		_ = json.NewEncoder(w).Encode(users)
-	case http.MethodPost:
-		var user model.User
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			http.Error(w, "Invalid request payload", http.StatusBadRequest)
-			return
-		}
-
-		createdUser, err := h.store.Create(r.Context(), user)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(createdUser)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
+	users, err := h.store.List(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	err = json.NewEncoder(w).Encode(users)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
+	user := &model.User{}
+	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	created, err := h.store.Create(r.Context(), user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(created)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	user, err := h.store.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+	user := &model.User{}
+	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	updatedSubscription, err := h.store.Update(r.Context(), user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(updatedSubscription)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	err := h.store.Delete(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -11,25 +11,25 @@ import (
 )
 
 type inMemoryUser struct {
-	store map[string]model.User
+	store map[string]*model.User
 }
 
 func NewUserStore() store.User {
 	return &inMemoryUser{
-		store: make(map[string]model.User),
+		store: make(map[string]*model.User),
 	}
 }
 
-func (u *inMemoryUser) Get(_ context.Context, id string) (model.User, error) {
+func (u *inMemoryUser) Get(_ context.Context, id string) (*model.User, error) {
 	return u.store[id], nil
 }
 
-func (u *inMemoryUser) Create(_ context.Context, user model.User) (model.User, error) {
+func (u *inMemoryUser) Create(_ context.Context, user *model.User) (*model.User, error) {
 	u.store[user.ID] = user
 	return user, nil
 }
 
-func (u *inMemoryUser) Update(_ context.Context, user model.User) (model.User, error) {
+func (u *inMemoryUser) Update(_ context.Context, user *model.User) (*model.User, error) {
 	u.store[user.ID] = user
 	return user, nil
 }
@@ -39,8 +39,8 @@ func (u *inMemoryUser) Delete(_ context.Context, id string) error {
 	return nil
 }
 
-func (u *inMemoryUser) List(_ context.Context) ([]model.User, error) {
-	users := make([]model.User, 0, len(u.store))
+func (u *inMemoryUser) List(_ context.Context) ([]*model.User, error) {
+	users := make([]*model.User, 0, len(u.store))
 	for _, user := range u.store {
 		users = append(users, user)
 	}
